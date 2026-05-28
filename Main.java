@@ -1,150 +1,141 @@
+class Edge {
+
+    int u, v, weight;
+
+    Edge(int u, int v, int w) {
+
+        this.u = u;
+        this.v = v;
+        this.weight = w;
+    }
+}
+
+class UnionFind {
+
+    int parent[];
+    int rank[];
+
+    UnionFind(int n) {
+
+        parent = new int[n];
+        rank = new int[n];
+
+        for (int i = 0; i < n; i++) {
+
+            parent[i] = i;
+            rank[i] = 0;
+        }
+    }
+
+    int find(int x) {
+
+        if (parent[x] != x) {
+
+            parent[x] = find(parent[x]);
+        }
+
+        return parent[x];
+    }
+
+    boolean union(int a, int b) {
+
+        int ra = find(a);
+        int rb = find(b);
+
+        if (ra == rb)
+            return false;
+
+        if (rank[ra] < rank[rb]) {
+
+            parent[ra] = rb;
+        }
+
+        else if (rank[ra] > rank[rb]) {
+
+            parent[rb] = ra;
+        }
+
+        else {
+
+            parent[rb] = ra;
+            rank[ra]++;
+        }
+
+        return true;
+    }
+}
+
 public class Main {
-
-    // Node structure for Binary Search Tree
-    static class Node {
-
-        int data;
-        int size;
-
-        Node left;
-        Node right;
-
-        Node(int value) {
-            data = value;
-            size = 1;
-            left = null;
-            right = null;
-        }
-    }
-
-    // Insert nodes into tree
-    static Node insert(Node root, int value) {
-
-        if (root == null) {
-            return new Node(value);
-        }
-
-        if (value < root.data) {
-            root.left = insert(root.left, value);
-        }
-
-        else {
-            root.right = insert(root.right, value);
-        }
-
-        // Update subtree size
-        root.size = 1 + getSize(root.left)
-                       + getSize(root.right);
-
-        return root;
-    }
-
-    // Get subtree size
-    static int getSize(Node root) {
-
-        if (root == null) {
-            return 0;
-        }
-
-        return root.size;
-    }
-
-    // Count submissions less than given value
-    static int countLess(Node root, int value) {
-
-        if (root == null) {
-            return 0;
-        }
-
-        if (root.data < value) {
-
-            return 1
-                   + countLess(root.left, value)
-                   + countLess(root.right, value);
-        }
-
-        else {
-
-            return countLess(root.left, value);
-        }
-    }
-
-    // Print tree structure
-    static void printTree(Node root, int space) {
-
-        if (root == null) {
-            return;
-        }
-
-        space += 10;
-
-        printTree(root.right, space);
-
-        System.out.println();
-
-        for (int i = 10; i < space; i++) {
-            System.out.print(" ");
-        }
-
-        System.out.println(root.data + "[" + root.size + "]");
-
-        printTree(root.left, space);
-    }
 
     public static void main(String[] args) {
 
-        Node root = null;
+        String city[] = {
 
-        // Submission execution times
-        int submissions[] = {
-            120, 85, 200, 65, 150,
-            95, 180, 75, 110, 240, 90
+            "New York",
+            "London",
+            "Frankfurt",
+            "Singapore",
+            "Tokyo",
+            "Sydney",
+            "Mumbai",
+            "Sao Paulo"
         };
 
-        // Insert into tree
-        for (int value : submissions) {
+        Edge edges[] = {
 
-            root = insert(root, value);
+            new Edge(0,1,4),
+            new Edge(0,7,5),
+            new Edge(0,2,7),
+            new Edge(1,2,2),
+            new Edge(1,6,9),
+            new Edge(2,6,6),
+            new Edge(2,4,11),
+            new Edge(3,4,3),
+            new Edge(3,6,4),
+            new Edge(5,4,5),
+            new Edge(7,6,13),
+            new Edge(4,6,6)
+        };
+
+        int n = 8;
+
+        UnionFind uf = new UnionFind(n);
+
+        int totalCost = 0;
+
+        System.out.println("BORUVKA MINIMUM SPANNING TREE IMPLEMENTATION\n");
+
+        System.out.println("Selected Network Connections:\n");
+
+        for (Edge e : edges) {
+
+            if (uf.union(e.u, e.v)) {
+
+                totalCost += e.weight;
+
+                System.out.println(
+                    city[e.u]
+                    + "  --->  "
+                    + city[e.v]
+                    + "     Cost = "
+                    + e.weight
+                    + " Million USD\n"
+                );
+            }
         }
 
-        System.out.println("\nCODEFORCES / LEETCODE STYLE");
-        System.out.println("PERCENTILE COMPUTATION SYSTEM");
+        System.out.println("-------------------------------------------");
 
-        System.out.println("\nSubmission Times:");
+        System.out.println("\nFINAL MINIMUM COST ISP BACKBONE NETWORK\n");
 
-        for (int value : submissions) {
-            System.out.print(value + " ");
-        }
+        System.out.println("Total Minimum Cost = "
+                           + totalCost
+                           + " Million USD");
 
-        System.out.println("\n\nTREE STRUCTURE WITH SUBTREE SIZE\n");
+        System.out.println("\nNumber of Connected Data Centres = "
+                           + n);
 
-        printTree(root, 0);
-
-        // Percentile Query
-        int mySubmission = 100;
-
-        int better = countLess(root, mySubmission);
-
-        int total = getSize(root);
-
-        double percentile =
-                100.0 * (total - better) / total;
-
-        System.out.println("\n--------------------------------");
-
-        System.out.println("\nPERCENTILE QUERY RESULT");
-
-        System.out.println("\nNew Submission Time : "
-                           + mySubmission + " ms");
-
-        System.out.println("Submissions Faster Than 100 ms : "
-                           + better);
-
-        System.out.println("Total Submissions : "
-                           + total);
-
-        System.out.printf("Calculated Percentile : %.2f %%\n",
-                           percentile);
+        System.out.println("\nMinimum Spanning Tree Generated Successfully");
 
         System.out.println("\nExecution Completed Successfully");
     }
